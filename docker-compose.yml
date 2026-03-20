@@ -1,26 +1,19 @@
 version: '3.8'
 
 services:
-  codex-register:
+  webui:
     build: .
-    container_name: codex-register
     ports:
-      - "${APP_PORT:-8000}:8000"
+      - "1455:1455"
+    environment:
+      - WEBUI_HOST=0.0.0.0
+      - WEBUI_PORT=1455
+      - DEBUG=0
+      - LOG_LEVEL=info
+      # 如果需要访问密码，可以在这里取消注释并设置
+      # - WEBUI_ACCESS_PASSWORD=your_secure_password
     volumes:
+      # 挂载数据目录以持久化数据库和日志
       - ./data:/app/data
       - ./logs:/app/logs
-    environment:
-      - PYTHONUNBUFFERED=1
-      # Web UI 配置（也可在 .env 文件中设置）
-      - APP_HOST=0.0.0.0
-      - APP_PORT=${APP_PORT:-8000}
-      - APP_ACCESS_PASSWORD=${APP_ACCESS_PASSWORD:-admin123}
-      # 数据库（默认 SQLite，如需 PostgreSQL 取消下方注释）
-      # - APP_DATABASE_URL=postgresql://user:password@db:5432/codex
-      # HTTP 代理（如需代理取消下方注释）
-      # - HTTP_PROXY=http://your-proxy:port
-      # - HTTPS_PROXY=http://your-proxy:port
-    env_file:
-      - path: .env
-        required: false
     restart: unless-stopped
