@@ -236,6 +236,24 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
         category=SettingCategory.REGISTRATION,
         description="默认密码长度"
     ),
+    "registration_mode": SettingDefinition(
+        db_key="registration.mode",
+        default_value="browser",
+        category=SettingCategory.REGISTRATION,
+        description="注册流程模式 (browser/http)"
+    ),
+    "registration_browser_headless": SettingDefinition(
+        db_key="registration.browser_headless",
+        default_value=True,
+        category=SettingCategory.REGISTRATION,
+        description="浏览器注册是否启用无头模式"
+    ),
+    "registration_browser_timeout": SettingDefinition(
+        db_key="registration.browser_timeout",
+        default_value=120,
+        category=SettingCategory.REGISTRATION,
+        description="浏览器注册超时时间（秒）"
+    ),
     "registration_sleep_min": SettingDefinition(
         db_key="registration.sleep_min",
         default_value=5,
@@ -398,6 +416,8 @@ SETTING_TYPES: Dict[str, Type] = {
     "registration_max_retries": int,
     "registration_timeout": int,
     "registration_default_password_length": int,
+    "registration_browser_headless": bool,
+    "registration_browser_timeout": int,
     "registration_sleep_min": int,
     "registration_sleep_max": int,
     "email_service_priority": dict,
@@ -661,6 +681,9 @@ class Settings(BaseModel):
     registration_max_retries: int = 3
     registration_timeout: int = 120
     registration_default_password_length: int = 12
+    registration_mode: str = "browser"
+    registration_browser_headless: bool = True
+    registration_browser_timeout: int = 120
     registration_sleep_min: int = 5
     registration_sleep_max: int = 30
 

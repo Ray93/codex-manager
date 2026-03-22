@@ -11,6 +11,7 @@ from .http_client import (
     create_http_client,
     create_openai_client,
 )
+from .register_browser import BrowserRegistrationArtifacts, BrowserRegistrationRunner
 from .register import RegistrationEngine, RegistrationResult
 from .utils import setup_logging, get_data_dir
 
@@ -25,6 +26,8 @@ __all__ = [
     'RequestConfig',
     'create_http_client',
     'create_openai_client',
+    'BrowserRegistrationArtifacts',
+    'BrowserRegistrationRunner',
     'RegistrationEngine',
     'RegistrationResult',
     'setup_logging',
