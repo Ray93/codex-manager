@@ -1,10 +1,39 @@
 from src.services.base import (
+    BaseEmailService,
     EmailProviderBackoffState,
+    EmailServiceType,
     OTPTimeoutEmailServiceError,
     RateLimitedEmailServiceError,
     apply_adaptive_backoff,
     calculate_adaptive_backoff_delay,
 )
+
+
+class DummyEmailService(BaseEmailService):
+    def __init__(self):
+        super().__init__(EmailServiceType.DUCK_MAIL, "dummy")
+
+    def create_email(self, config=None):
+        raise NotImplementedError
+
+    def get_verification_code(
+        self,
+        email,
+        email_id=None,
+        timeout=120,
+        pattern=r"(?<!\d)(\d{6})(?!\d)",
+        otp_sent_at=None,
+    ):
+        raise NotImplementedError
+
+    def list_emails(self, **kwargs):
+        return []
+
+    def delete_email(self, email_id: str) -> bool:
+        return False
+
+    def check_health(self) -> bool:
+        return True
 
 
 def test_calculate_adaptive_backoff_delay_uses_failure_count_progression():
@@ -59,3 +88,16 @@ def test_apply_adaptive_backoff_keeps_normal_rate_limit_on_exponential_curve():
     assert next_state.delay_seconds == 120
     assert next_state.opened_until == 1220.0
     assert next_state.retry_after == 7
+
+
+def test_update_status_resets_provider_backoff_after_success():
+    service = DummyEmailService()
+
+    service.update_status(False, RateLimitedEmailServiceError("请求失败: 429"))
+
+    assert service.provider_backoff_state.failures == 1
+    assert service.provider_backoff_state.delay_seconds == 30
+
+    service.update_status(True)
+
+    assert service.provider_backoff_state == EmailProviderBackoffState()
